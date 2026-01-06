@@ -2,6 +2,10 @@ package com.yeditepe.finalexam.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -11,13 +15,36 @@ import com.yeditepe.finalexam.model.Task
 import com.yeditepe.finalexam.viewmodel.TaskViewModel
 
 @Composable
-fun TaskListScreen(viewModel: TaskViewModel = viewModel()) {
+fun TaskListScreen(navController: NavController, viewModel: TaskViewModel = viewModel()) {
 
     // TODO 3: Read task list from ViewModel
-
+    val tasks = viewModel.tasks
     Column {
         // TODO 4: Display task titles and completion status
         // Use a simple Column or LazyColumn
+        LazyColumn {
+            items(tasks) { task ->
+                ListItem(
+                    headlineContent = {
+                        Text(
+                            text = task.title,
+                            modifier = Modifier.clickable {
+                                navController.navigate("taskDetail/${task.title}")
+                            }
+                        )
+                    },
+                    supportingContent = {
+                        Text(if (task.isCompleted) "Completed" else "Pending")
+                    },
+                    trailingContent = {
+                        Checkbox(
+                            checked = task.isCompleted,
+                            onCheckedChange = { viewModel.toggleTask(task.id) }
+                        )
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -28,6 +55,7 @@ fun TaskRow(task: Task, navController: NavController) {
         text = task.title,
         modifier = Modifier.clickable {
             // TODO 3: Navigate to detail screen with task title
+            navController.navigate("taskDetail/${task.title}")
         }
     )
 }
